@@ -1,0 +1,340 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="phaser.js"></script>
+    <script type="text/javascript">
+   var game = new Phaser.Game(500, 500, Phaser.AUTO, 'phaser-example', { preload: preload, create: create });
+
+var text;
+var textEnergy;
+var textLove;
+var textWeek;
+var text1;
+var text2;
+var text3;
+var energy = 10;
+var girlLove = 5;
+var week = 1;
+var loves = 0;
+var music;
+var image;
+
+var rules = {
+              walk:{energy:-4,girlLove:2,path:"out"},
+              eat:{energy:1,girlLove:1,path:"dinner"},
+              dance:{energy:-5,girlLove:3,path:"dance"},
+              drink:{energy:1,girlLove:1,path:"drink"},
+              love:{energy:-5,girlLove:5,path:"bed"}
+            };
+var rulesOptions = {
+              walk:{option1:"eat",option2:"dance"},
+              eat:{option1:"dance",option2:"walk"},
+              dance:{option1:"drink",option2:""},
+              drink:{option1:"dance",option2:""},
+              love:{option1:"eat",option2:""},
+            };
+
+function preload () {
+    //  You can fill the preloader with as many assets as your game requires
+    //  Here we are loading an image. The first parameter is the unique
+    //  string by which we'll identify the image later in our code.
+    //  The second parameter is the URL of the image (relative)
+    game.load.spritesheet('button', 'assets/pics/button.png', 168, 58);
+    game.load.image('out', 'assets/pics/out.png');
+    game.load.image('logo', 'assets/pics/logo.png');
+    game.load.image('dinner', 'assets/pics/dinner.png');
+    game.load.image('dance', 'assets/pics/dance.png');
+    game.load.image('drink', 'assets/pics/drink.png');
+    game.load.image('bed', 'assets/pics/bed.png');
+    game.load.image('main', 'assets/pics/main.png');
+    game.load.image('pregnant', 'assets/pics/pregnant.png');
+    game.load.audio('song', 'assets/music/friends_8bit.ogg');
+}
+
+function create() {
+    game.stage.backgroundColor = 0x000000;
+    music = game.add.audio('song');
+    //music.play();
+    music.play('',0,1,true);
+    group = game.add.group();
+     //  This creates a simple sprite that is using our loaded image and
+    //  displays it on-screen and assign it to a variable
+    image = game.add.sprite(game.world.centerX, game.world.centerY, 'logo');
+    group.add(image);
+    //  Moves the image anchor to the middle, so it centers inside the game properly
+    image.anchor.set(0.5);
+
+    //  Enables all kind of input actions on this image (click, etc)
+    image.inputEnabled = true;
+
+    text = game.add.text(game.world.centerX, 36, '', { fill: '#ffffff' });
+    text.text = "Help them to get pregnant!";
+    text.anchor.set(0.5);
+    group.add(text);
+
+    text = game.add.text(game.world.centerX, 396, '', { fill: '#ffffff' });
+    text.text = "click to start!";
+    text.anchor.set(0.5);
+    group.add(text);
+
+    image.events.onInputDown.add(listener, this);    
+}
+
+function listener () {
+    image.inputEnabled = false;
+    game.world.remove(group);
+    start();
+}
+
+function start(){
+    group = game.add.group();
+    var imageCouple = game.add.sprite(game.world.centerX-130, game.world.centerY-200, "main");
+    group.add(imageCouple);
+
+    text = game.add.text(120, 260, '', { fill: '#ffffff' });
+    text.text = "What do we do now?";
+    group.add(text);
+
+    textEnergy = game.add.text(20, 16, '', { fill: '#99ffcc' });
+    textEnergy.text = "Energy : "+energy;
+    group.add(textEnergy);
+
+    textLove = game.add.text(180, 16, '', { fill: '#ff3333' });
+    textLove.text = "Love : "+girlLove;
+    group.add(textLove);
+
+    textWeek = game.add.text(320, 16, '', { fill: '#99ff33' });
+    textWeek.text = "Weekend : "+week;
+    group.add(textWeek);
+
+    // button top
+    var button1 = game.make.button(game.world.centerX - 95, 300, 'button', optionOne, this,  1, 0);
+    window.rich = button1;
+    group.add(button1);
+    text1 = game.add.text(game.world.centerX - 70, 310, '', { fill: '#000000' });
+    text1.text = "walk";
+    group.add(text1);
+    // button mid
+    var button2 = game.make.button(game.world.centerX - 95, 360, 'button', optionTwo, this,  1, 0);
+    window.rich = button2;
+    group.add(button2);
+    text2 = game.add.text(game.world.centerX - 70, 370, '', { fill: '#222222' });
+    text2.text = "eat";
+    group.add(text2);
+    // button bottom
+    var button3 = game.make.button(game.world.centerX - 95, 420, 'button', optionThree, this,  1, 0);
+    window.rich = button3;
+    group.add(button3);
+     text3= game.add.text(game.world.centerX - 70, 430, '', { fill: '#222222' });
+    text3.text = "dance";
+    group.add(text3);
+}
+
+function setValues(tag){
+
+    energy = energy + rules[tag].energy;
+    girlLove = girlLove + rules[tag].girlLove;
+
+   
+    console.log(tag+"");
+    game.world.remove(group);
+    group = game.add.group();
+
+    var imageCouple = game.add.sprite(game.world.centerX-130, game.world.centerY-200, rules[tag].path);
+    group.add(imageCouple);
+
+    text = game.add.text(120, 260, '', { fill: '#ffffff' });
+    text.text = "What do we do now?";
+    group.add(text);
+
+   
+    textEnergy = game.add.text(20, 16, '', { fill: '#99ffcc' });
+    textEnergy.text = "Energy : "+energy;
+    group.add(textEnergy);
+
+    textLove = game.add.text(180, 16, '', { fill: '#ff3333' });
+    textLove.text = "Love : "+girlLove;
+    group.add(textLove);
+
+    textWeek = game.add.text(320, 16, '', { fill: '#99ff33' });
+    textWeek.text = "Weekend : "+week;
+    group.add(textWeek);
+
+    // button top
+    var button1 = game.make.button(game.world.centerX - 95, 300, 'button', optionOne, this,  1, 0);
+    window.rich = button1;
+    group.add(button1);
+    text1 = game.add.text(game.world.centerX - 70, 310, '', { fill: '#000000' });
+    if(energy + rules[rulesOptions[tag].option1].energy>=0){
+       text1.text = rulesOptions[tag].option1;
+    }else{
+      text1.text = " ";
+    }
+
+    group.add(text1);
+    // button mid
+    var button2 = game.make.button(game.world.centerX - 95, 360, 'button', optionTwo, this,  1, 0);
+    window.rich = button2;
+    group.add(button2);
+    text2 = game.add.text(game.world.centerX - 70, 370, '', { fill: '#222222' });
+    //text2.text = rulesOptions[tag].option2;
+
+     if(rulesOptions[tag].option2 && (energy+rules[rulesOptions[tag].option2].energy>=0)){
+       text2.text = rulesOptions[tag].option2;
+    }else{
+       text2.text = " ";
+    }
+    group.add(text2);
+    // button bottom
+    var button3 = game.make.button(game.world.centerX - 95, 420, 'button', optionThree, this,  1, 0);
+    window.rich = button3;
+    group.add(button3);
+     text3= game.add.text(game.world.centerX - 70, 430, '', { fill: '#222222' });
+    text3.text = "next week";
+    group.add(text3);
+
+    if(energy>=8&&girlLove>=10){
+    // button sex
+    var buttonSex = game.make.button(game.world.centerX +80, 300, 'button', optionSex, this,  1, 0);
+    window.rich = buttonSex;
+    group.add(buttonSex);
+     textSex= game.add.text(game.world.centerX +140, 310, '', { fill: '#222222' });
+    textSex.text = "love";
+    group.add(textSex);
+    }
+
+}
+
+function optionOne() {
+    var tag = text1.text;
+    if(tag=="restart"){
+       restart();
+    }else{
+    if(tag!=" "){
+      setValues(tag);
+    }
+  }
+}
+
+function optionTwo() {
+  var tag = text2.text;
+ if(tag!=" "){
+      setValues(tag);
+    }
+}
+
+function optionThree() {
+  var tag = text3.text;
+  if(tag=="next week"){
+      startWeek();
+    }else{
+      if(tag!=" "){
+      setValues(tag);
+      }
+    }
+}
+
+function optionSex() {
+  //pregnant();
+  var tag = textSex.text;
+  if(loves==0){
+    loves = loves+1;
+setValues(tag);
+  }else{
+    loves = loves+1;
+  var result = randomIntFromInterval(1,5);
+  if(result%5==0){
+      console.log("result =>"+result);
+      pregnant();
+  }else{
+     setValues(tag);
+  }
+}
+}
+
+function pregnant(){
+    game.world.remove(group);
+    group = game.add.group();
+
+    var imageCouple = game.add.sprite(game.world.centerX-130, game.world.centerY-200, "pregnant");
+    group.add(imageCouple);
+
+    text = game.add.text(120, 260, '', { fill: '#ffffff' });
+    text.text = "Pregnant on week "+week+" \nyou win!";
+    group.add(text);
+
+    // button top
+    var button1 = game.make.button(game.world.centerX - 95, 360, 'button', optionOne, this,  1, 0);
+    window.rich = button1;
+    group.add(button1);
+    text1 = game.add.text(game.world.centerX - 70, 370, '', { fill: '#000000' });
+    text1.text = "restart";
+    group.add(text1);
+   
+}
+
+function randomIntFromInterval(min,max)
+{
+    return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function startWeek(){
+  week = week+1;
+
+  if(girlLove<=5){
+    girlLove = 4;
+  }else{
+    if(girlLove>=11){
+      if(girlLove>=16){
+        if(girlLove>=20){
+        girlLove = 11;     
+        }else{
+      girlLove = 8;
+    }
+      }else{
+      girlLove = 6;
+    }
+    }else{
+      girlLove = 5;
+    }
+  }
+  if(energy>=10){
+    girlLove = girlLove -3;
+    energy = 8;
+  }else{
+    if(energy<=2){
+    energy = 5;
+    }else{
+
+  energy = 10;
+    }
+  }
+  game.world.remove(group);
+  start();
+}
+
+function restart(){
+  game.world.remove(group);
+     energy = 10;
+     girlLove = 5;
+     week = 1;
+     loves = 0;
+     music.stop();
+     create();
+}
+
+function gameOver(){
+  game.world.remove(group);
+
+}
+    </script>
+  </body>
+</html>       
